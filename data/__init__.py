@@ -29,7 +29,7 @@ def process(s: tf.Tensor) -> tf.Tensor:
     return tf.reshape(tf.divide(tf.add(tf.cast(s, dtype=tf.float32), -127.5), 127.5), (1, IMG_W, IMG_H, CHANNELS))
 
 
-AMOUNT = 2
+AMOUNT = 5
 DIV = 1
 
 

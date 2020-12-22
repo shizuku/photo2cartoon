@@ -1,10 +1,15 @@
 .ipynb_checkpoints
 __pycache__
-*.tfrecord
 checkpoints
+
+*.tfrecord
+
 test_img/**/*
 train_img/**/*
+
+model.zip
 generator_g
 generator_f
 discriminator_x
 discriminator_y
+
