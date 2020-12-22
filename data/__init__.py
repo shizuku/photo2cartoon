@@ -28,11 +28,11 @@ def parse(s: str) -> tf.Tensor:
 def process(s: tf.Tensor) -> tf.Tensor:
     return tf.reshape(tf.divide(tf.add(tf.cast(s, dtype=tf.float32), -127.5), 127.5), (1, IMG_W, IMG_H, CHANNELS))
 
-
+IMG_NUM = 20
 AMOUNT = 100
 DIV = 10
-TRAIN_IMG_COUNT = 1800
-TEST_IMG_COUNT = 200
+TEST_IMG_COUNT = DIV * IMG_NUM
+TRAIN_IMG_COUNT = AMOUNT * IMG_NUM - TEST_IMG_COUNT
 
 def cut(a: tf.Tensor) -> list:
     ie = a.shape[0] - IMG_W
@@ -81,8 +81,8 @@ def load_images(path_a: list, path_b: list) -> (list, list, list, list):
 
 def generate_data():
     train_a, train_b, test_a, test_b = load_images(
-        [A_FILENAME.format(x) for x in range(20)],
-        [B_FILENAME.format(x) for x in range(20)])
+        [A_FILENAME.format(x) for x in range(IMG_NUM)],
+        [B_FILENAME.format(x) for x in range(IMG_NUM)])
 
     train_a_ds = tf.data.Dataset.from_tensor_slices(train_a)
     train_b_ds = tf.data.Dataset.from_tensor_slices(train_b)
@@ -90,6 +90,8 @@ def generate_data():
     train_b_ds = train_b_ds.map(process, num_parallel_calls=AUTOTUNE)
     train_a_ds = train_a_ds.map(serialize, num_parallel_calls=AUTOTUNE)
     train_b_ds = train_b_ds.map(serialize, num_parallel_calls=AUTOTUNE)
+    train_a_ds = train_a_ds.shuffle(buffer_size=TRAIN_IMG_COUNT)
+    train_b_ds = train_b_ds.shuffle(buffer_size=TRAIN_IMG_COUNT)
     train_a_ds_writer = tf.data.experimental.TFRecordWriter(TRAIN_A_FILENAME)
     train_a_ds_writer.write(train_a_ds)
     train_b_ds_writer = tf.data.experimental.TFRecordWriter(TRAIN_B_FILENAME)
@@ -101,6 +103,8 @@ def generate_data():
     test_b_ds = test_b_ds.map(process, num_parallel_calls=AUTOTUNE)
     test_a_ds = test_a_ds.map(serialize, num_parallel_calls=AUTOTUNE)
     test_b_ds = test_b_ds.map(serialize, num_parallel_calls=AUTOTUNE)
+    test_a_ds = test_a_ds.shuffle(buffer_size=TEST_IMG_COUNT)
+    test_b_ds = test_b_ds.shuffle(buffer_size=TEST_IMG_COUNT)
     test_a_ds_writer = tf.data.experimental.TFRecordWriter(TEST_A_FILENAME)
     test_a_ds_writer.write(test_a_ds)
     test_b_ds_writer = tf.data.experimental.TFRecordWriter(TEST_B_FILENAME)
@@ -113,8 +117,6 @@ def load_train_data() -> (tf.data.Dataset, tf.data.Dataset):
     train_b_ds = tf.data.TFRecordDataset(TRAIN_B_FILENAME)
     train_a_ds = train_a_ds.map(parse, num_parallel_calls=AUTOTUNE)
     train_b_ds = train_b_ds.map(parse, num_parallel_calls=AUTOTUNE)
-    train_a_ds = train_a_ds.shuffle(buffer_size=TRAIN_IMG_COUNT)
-    train_b_ds = train_b_ds.shuffle(buffer_size=TRAIN_IMG_COUNT)
     return train_a_ds, train_b_ds
 
 
@@ -123,8 +125,6 @@ def load_test_data() -> (tf.data.Dataset, tf.data.Dataset):
     test_b_ds = tf.data.TFRecordDataset(TEST_B_FILENAME)
     test_a_ds = test_a_ds.map(parse, num_parallel_calls=AUTOTUNE)
     test_b_ds = test_b_ds.map(parse, num_parallel_calls=AUTOTUNE)
-    test_a_ds = test_a_ds.shuffle(buffer_size=TEST_IMG_COUNT)
-    test_b_ds = test_b_ds.shuffle(buffer_size=TEST_IMG_COUNT)
     return test_a_ds, test_b_ds
 
 

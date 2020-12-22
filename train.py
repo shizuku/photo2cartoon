@@ -115,7 +115,7 @@ def train_step(real_x, real_y):
     discriminator_y_optimizer.apply_gradients(zip(discriminator_y_gradients, discriminator_y.trainable_variables))
 
 
-EPOCHS = 5
+EPOCHS = 10
 print("start epoch{}".format(EPOCHS))
 
 for epoch in range(EPOCHS):
@@ -136,3 +136,4 @@ generator_g.save("generator_g")
 generator_f.save("generator_f")
 discriminator_x.save("discriminator_x")
 discriminator_y.save("discriminator_y")
+
