@@ -14,7 +14,7 @@ BUFFER_SIZE = 1000
 BATCH_SIZE = 1
 IMG_W = 256
 IMG_H = 256
-CHANNELS = 1
+CHANNELS = 3
 
 generator_g = model.generator(CHANNELS, norm_type='instancenorm')
 generator_f = model.generator(CHANNELS, norm_type='instancenorm')
