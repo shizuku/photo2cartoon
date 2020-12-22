@@ -1,0 +1,10 @@
+.ipynb_checkpoints
+__pycache__
+*.tfrecord
+checkpoints
+test_img/**/*
+train_img/**/*
+generator_g
+generator_f
+discriminator_x
+discriminator_y
