@@ -29,9 +29,10 @@ def process(s: tf.Tensor) -> tf.Tensor:
     return tf.reshape(tf.divide(tf.add(tf.cast(s, dtype=tf.float32), -127.5), 127.5), (1, IMG_W, IMG_H, CHANNELS))
 
 
-AMOUNT = 5
-DIV = 1
-
+AMOUNT = 100
+DIV = 10
+TRAIN_IMG_COUNT = 1800
+TEST_IMG_COUNT = 200
 
 def cut(a: tf.Tensor) -> list:
     ie = a.shape[0] - IMG_W
@@ -112,6 +113,8 @@ def load_train_data() -> (tf.data.Dataset, tf.data.Dataset):
     train_b_ds = tf.data.TFRecordDataset(TRAIN_B_FILENAME)
     train_a_ds = train_a_ds.map(parse, num_parallel_calls=AUTOTUNE)
     train_b_ds = train_b_ds.map(parse, num_parallel_calls=AUTOTUNE)
+    train_a_ds = train_a_ds.shuffle(buffer_size=TRAIN_IMG_COUNT)
+    train_b_ds = train_b_ds.shuffle(buffer_size=TRAIN_IMG_COUNT)
     return train_a_ds, train_b_ds
 
 
@@ -120,6 +123,8 @@ def load_test_data() -> (tf.data.Dataset, tf.data.Dataset):
     test_b_ds = tf.data.TFRecordDataset(TEST_B_FILENAME)
     test_a_ds = test_a_ds.map(parse, num_parallel_calls=AUTOTUNE)
     test_b_ds = test_b_ds.map(parse, num_parallel_calls=AUTOTUNE)
+    test_a_ds = test_a_ds.shuffle(buffer_size=TEST_IMG_COUNT)
+    test_b_ds = test_b_ds.shuffle(buffer_size=TEST_IMG_COUNT)
     return test_a_ds, test_b_ds
 
 

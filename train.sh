@@ -5,4 +5,3 @@ docker run -dit --rm \
 	-u $(id -u):$(id -g) \
 	tensorflow/tensorflow:latest \
 	python ./train.py
-
